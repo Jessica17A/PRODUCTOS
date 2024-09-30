@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Productos.Models.Producto>
+
+@{
+    ViewData["Title"] = "Gestión de Stock";
+    var productosSinStock = ViewData["ProductosSinStock"] as List<Productos.Models.Producto> ?? new List<Productos.Models.Producto>();
+    var productosConStock = ViewData["ProductosConStock"] as List<Productos.Models.Producto> ?? new List<Productos.Models.Producto>();
+    var stockDictionary = ViewData["StockDictionary"] as Dictionary<int, Productos.Models.Stock> ?? new Dictionary<int, Productos.Models.Stock>();
+}
+
+<div class="container mt-5">
+    <h1>Gestión de Stock</h1>
+
+    <!-- Mostrar los productos sin stock inicial -->
+    <h3>Productos Sin Stock Inicial</h3>
+    <div class="row">
+        @foreach (var producto in productosSinStock)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card" style="min-height: 300px;">
+                    <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@producto.Nombre</h5>
+                        <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
+
+                        <!-- Formulario para ingresar stock inicial -->
+                        <form method="post" action="@Url.Action("ActualizarStock", "Stock")">
+                            <input type="hidden" name="id" value="@producto.ProductoID" />
+                            <label for="stock" class="form-label">Ingresar Stock Inicial</label>
+                            <input type="number" class="form-control" name="nuevoStock" id="stock" min="0" value="0" style="text-align: center; width: 100px;">
+                            <button type="submit" class="btn btn-success mt-2">Actualizar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Mostrar los productos con stock -->
+    <h3>Productos con Stock</h3>
+    <div class="row">
+        @foreach (var producto in productosConStock)
+        {
+            var stock = stockDictionary.ContainsKey(producto.ProductoID) ? stockDictionary[producto.ProductoID] : null;
+            <div class="col-md-4 mb-4">
+                <div class="card" style="min-height: 300px;">
+                    <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@producto.Nombre</h5>
+                        <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
+                        <p class="card-text"><strong>Stock Actual:</strong> @(stock?.StockActual ?? 0)</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JavaScript Bundle -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .form-label {
+        margin-bottom: 0.5rem;
+    }
+</style>
